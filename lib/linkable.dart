@@ -60,6 +60,7 @@ class Linkable extends StatelessWidget {
     init();
     return SelectableText.rich(
       onTap: onTap,
+      scrollPhysics: NeverScrollableScrollPhysics(),
       TextSpan(
         text: '',
         style: style,
