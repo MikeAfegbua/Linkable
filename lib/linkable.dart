@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 library linkable;
 
 import 'package:flutter/gestures.dart';
@@ -32,6 +34,7 @@ class Linkable extends StatelessWidget {
   final textWidthBasis;
 
   final textHeightBehavior;
+  final void Function()? onTap;
 
   List<Parser> _parsers = <Parser>[];
   List<Link> _links = <Link>[];
@@ -39,6 +42,7 @@ class Linkable extends StatelessWidget {
   Linkable({
     Key? key,
     required this.text,
+    this.onTap,
     this.textColor = Colors.black,
     this.linkColor = Colors.blue,
     this.style,
@@ -55,6 +59,7 @@ class Linkable extends StatelessWidget {
   Widget build(BuildContext context) {
     init();
     return SelectableText.rich(
+      onTap: onTap,
       TextSpan(
         text: '',
         style: style,

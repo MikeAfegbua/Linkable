@@ -15,6 +15,9 @@ class LinkableExample extends StatelessWidget {
           children: <Widget>[
             Center(
               child: Linkable(
+                onTap: () {
+                  print('tapped');
+                },
                 text:
                     "Hi!\nI'm Anup.\n\nYou can email me at 1anuppanwar@gmail.com.\nOr just whatsapp me @ +91-8968894728.\n\nFor more info visit: \ngithub.com/anupkumarpanwar \nor\nhttps://www.linkedin.com/in/anupkumarpanwar/",
               ),
@@ -22,6 +25,17 @@ class LinkableExample extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Text('homePAGE'),
     );
   }
 }
