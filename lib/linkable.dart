@@ -8,12 +8,18 @@ import 'package:linkable/constants.dart';
 import 'package:linkable/emailParser.dart';
 import 'package:linkable/httpParser.dart';
 import 'package:linkable/link.dart';
+import 'package:linkable/mentionsParser.dart';
 import 'package:linkable/parser.dart';
 import 'package:linkable/telParser.dart';
+import 'package:linkable/user_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Linkable extends StatelessWidget {
   final String text;
+  final List<UserModel>? users;
+
+  /// Callback for tapping a link
+  final LinkCallback? onOpen;
 
   final textColor;
 
@@ -42,6 +48,8 @@ class Linkable extends StatelessWidget {
   Linkable({
     Key? key,
     required this.text,
+    this.users,
+    this.onOpen,
     this.onTap,
     this.textColor = Colors.black,
     this.linkColor = Colors.blue,
@@ -106,12 +114,21 @@ class Linkable extends StatelessWidget {
 
   _link(String text, String type) {
     return TextSpan(
-        text: text,
-        style: TextStyle(color: linkColor),
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
+      text: text,
+      style: TextStyle(color: linkColor),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () {
+          final mentionLink = _links.firstWhere(
+            (link) => link.regExpMatch.group(0) == text,
+          );
+
+          if (mentionLink.type == mention && mentionLink.user != null) {
+            onOpen?.call(mentionLink.user!);
+          } else {
             _launch(_getUrl(text, type));
-          });
+          }
+        },
+    );
   }
 
   _launch(String url) async {
@@ -130,6 +147,8 @@ class Linkable extends StatelessWidget {
         return text.substring(0, 7) == 'mailto:' ? text : 'mailto:$text';
       case tel:
         return text.substring(0, 4) == 'tel:' ? text : 'tel:$text';
+      case mention:
+        return text.substring(0, 10) == 'mention:' ? text : '@:$text';
       default:
         return text;
     }
@@ -145,6 +164,7 @@ class Linkable extends StatelessWidget {
     _parsers.add(EmailParser(text));
     _parsers.add(HttpParser(text));
     _parsers.add(TelParser(text));
+    _parsers.add(MentionParser(users ?? [], text));
   }
 
   _parseLinks() {
